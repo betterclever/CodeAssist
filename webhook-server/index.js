@@ -1,8 +1,14 @@
 const express = require('express');
 const rethinkdb = require('rethinkdb');
 
+const bodyParser = require('body-parser');
+
+
 const app = express();
 const port = 3000;
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 function getIntent(intentDN, parameters) {
     switch (intentDN) {
@@ -26,13 +32,13 @@ function getIntent(intentDN, parameters) {
 app.post('/incomingIntents', async (req, res) => {
     let body = req.body;
 
+    console.log('body', body);
     let conn = await r.connect({
         host: "149.28.137.113",
         port: 28015,
         db: "CodeAssist"
     })
 
-    console.log('conn', conn);
     const parameters = body.queryResult.parameters;
     const intentDN = body.intent.displayName;
 
