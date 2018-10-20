@@ -33,19 +33,25 @@ app.post('/incomingIntents', async (req, res) => {
     let body = req.body;
 
     console.log('body', body);
-    let conn = await r.connect({
+
+    const parameters = body.queryResult.parameters;
+    const intentDN = body.queryResult.intent.displayName;
+
+    let i = getIntent(intentDN, parameters);
+    console.log(i);
+    
+    i.id = 'betterclever';
+
+    r.connect({
         host: "149.28.137.113",
         port: 28015,
         db: "CodeAssist"
+    }).then(conn => {
+        r.table('UserCommands').update(conn, i);
+    }).catch(err => {
+        console.log(err);
     })
 
-    const parameters = body.queryResult.parameters;
-    const intentDN = body.intent.displayName;
-
-    let i = getIntent(intentDN, parameters);
-    i.id = 'betterclever';
-
-    r.table('UserCommands').update(conn, i);
 })
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
