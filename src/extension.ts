@@ -3,9 +3,10 @@
 import * as vscode from 'vscode';
 import * as r from 'rethinkdb';
 import { open } from 'fs';
+import { window, ViewColumn, commands, Uri } from 'vscode';
 
 interface Intent {
-    type: 'open' | 'git'
+    type: 'open' | 'git' | 'snippetSearch'
 }
 
 interface OpenIntent extends Intent {
@@ -16,6 +17,23 @@ interface OpenIntent extends Intent {
 interface GitIntent extends Intent {
     task: 'push' | 'pull' | 'fetch';
     remote?: string
+}
+
+interface SnippetSearch extends Intent {
+    query: string
+}
+
+function showSnippets(phrase: String, language: String) {
+    const query = `http://stacksnippet.com/gsc.q=${phrase}&gsc.ref=more:${language}`
+    const previewUri = Uri.parse(`${query}`)
+
+    return commands.executeCommand(
+        "vscode.previewHtml",
+        previewUri,
+        ViewColumn.Two
+    ).then((s) => { 
+        //console.log('done.'); 
+    }, window.showErrorMessage);
 }
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -53,15 +71,16 @@ export async function activate(context: vscode.ExtensionContext) {
                         break
                         case 'push': vscode.commands.executeCommand('git.push', remote)
                     }
+                } break;
+                case 'snippetSearch': {
+                    let s = intent as SnippetSearch
+                    showSnippets(s.query, 'all')
                 }
             }
             
         })
     })
 
-
-   
-    console.log('Congratulations, your extension "cossis" is now active!');
 
 }
 
