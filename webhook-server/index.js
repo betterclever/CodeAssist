@@ -1,6 +1,5 @@
-import express from 'express';
-import rethinkdb from 'rethinkdb';
-
+const express = require('express');
+const rethinkdb = require('rethinkdb');
 
 const app = express();
 const port = 3000;
