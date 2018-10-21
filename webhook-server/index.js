@@ -1,5 +1,5 @@
 const express = require('express');
-const rethinkdb = require('rethinkdb');
+const r = require('rethinkdb');
 
 const bodyParser = require('body-parser');
 
@@ -24,6 +24,42 @@ function getIntent(intentDN, parameters) {
 
             return intent;
         }
+        case 'Push': {
+            const branch = parameters.branch;
+
+            let intent = {
+                'type': 'git',
+                'task': 'push',
+                'branch': branch,
+                'remote': remote,
+            };
+
+            return intent;
+
+        }
+        case 'Commit': {
+            const message = parameters.commit;
+
+            let intent = {
+                'type': 'git',
+                'task': 'commit',
+                'message': message,
+            };
+
+            return intent;
+        }
+        case 'Snippet': {
+            const task = parameters.task
+            const language = (parameters.language) ? parameters.language : null
+            
+            let intent = {
+                'type': 'snippetSearch',
+                'query': task,
+                'language': language
+            };
+
+            return intent;
+        }
     }
 
     return null;
@@ -39,15 +75,18 @@ app.post('/incomingIntents', async (req, res) => {
 
     let i = getIntent(intentDN, parameters);
     console.log(i);
-    
+
     i.id = 'betterclever';
 
     r.connect({
         host: "149.28.137.113",
         port: 28015,
         db: "CodeAssist"
-    }).then(conn => {
-        r.table('UserCommands').update(conn, i);
+    }).then(conn => {    
+        r.table('UserCommands').update(i).run(conn, (err, cursor) => {
+            console.log(cursor)
+            console.log('err', err)
+        })
     }).catch(err => {
         console.log(err);
     })
