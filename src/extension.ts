@@ -22,19 +22,19 @@ interface GitIntent extends Intent {
 }
 
 interface SnippetSearch extends Intent {
-    query: string
+    query: string,
+    language?: string,
 }
 
 function showSnippets(phrase: String, language: String) {
-    const query = `http://stacksnippet.com/gsc.q=${phrase}&gsc.ref=more:${language}`
+    const query = `http://stacksnippet.com/#gsc.q=${phrase}&gsc.ref=more:${language}&gsc.tab=0`
     const previewUri = Uri.parse(`${query}`)
 
     return commands.executeCommand(
-        "vscode.previewHtml",
-        previewUri,
-        ViewColumn.Two
+        "vscode.open",
+        previewUri
     ).then((s) => { 
-        //console.log('done.'); 
+        console.log('opening in browser'); 
     }, window.showErrorMessage);
 }
 
@@ -79,7 +79,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 } break;
                 case 'snippetSearch': {
                     let s = intent as SnippetSearch
-                    showSnippets(s.query, 'all')
+                    showSnippets(s.query, s.language)
                 }
             }
             

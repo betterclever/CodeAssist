@@ -90,6 +90,8 @@ app.post('/incomingIntents', async (req, res) => {
         console.log(err);
     })
 
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify({}));
 })
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
