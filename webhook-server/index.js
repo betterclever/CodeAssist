@@ -31,14 +31,13 @@ function getIntent(intentDN, parameters) {
                 'type': 'git',
                 'task': 'push',
                 'branch': branch,
-                'remote': remote,
             };
 
             return intent;
 
         }
         case 'Commit': {
-            const message = parameters.commit;
+            const message = parameters.message;
 
             let intent = {
                 'type': 'git',

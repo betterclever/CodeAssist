@@ -15,7 +15,9 @@ interface OpenIntent extends Intent {
 }
 
 interface GitIntent extends Intent {
-    task: 'push' | 'pull' | 'fetch';
+    task: 'push' | 'pull' | 'fetch' | 'commit';
+    message?: string,
+    branch?: string,
     remote?: string
 }
 
@@ -46,6 +48,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     console.log(conn)
 
+
     // @ts-ignore
     r.table('UserCommands').changes().run(conn, function (err, cursor) {
         // cursor.each(console.log)
@@ -70,6 +73,8 @@ export async function activate(context: vscode.ExtensionContext) {
                         case 'pull': vscode.commands.executeCommand('git.pull', remote)
                         break
                         case 'push': vscode.commands.executeCommand('git.push', remote)
+                        break
+                        case 'commit': vscode.commands.executeCommand('git.commit', )
                     }
                 } break;
                 case 'snippetSearch': {
